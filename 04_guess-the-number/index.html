@@ -4,36 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Guess the Number</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 600px;
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
+    <h1>Guess the Number</h1>
+    <p><strong>Rule:</strong> Guess a number between 1 and 100. You have 10 chances!</p>
+
     <section>
-        <form id="guessForm">
-            <span>Rule: </span>
-            <span>Guess the number between 1 and 100. You have 10 chances to guess it correctly!</span>
-            <br><br>
-            <label for="guess">Enter your guess:</label>
-            <br>
-            <input id="guess" type="number" min="1" max="100" required>
-            <br>
-            <button type="button" id="submit">Submit Guess</button>
-            <br>
+        <form id="game-form">
+            <input id="guess" type="number" placeholder="Enter your guess" autocomplete="off">
             <div>
-                <span id="result"></span>
+                <button type="button" id="submit">Submit</button>
+                <button type="button" id="reset" style="display: none;">Reset</button>
             </div>
-            <div>
-                <span id="remaining-chances"></span>
-            </div>
-            <div>
-                <span>Guesses made: </span>
-                <ul id="guess-list"></ul> <!-- Here we will display all guesses immediately -->
-            </div>
-            <button type="button" id="reset" style="display:none;">Restart Game</button>
         </form>
+        <p id="result"></p>
+        <ul id="guesses"></ul>
     </section>
-    
-    
 
-
-    <script src="app.js"></script>
+    <script src="app.js">
+       
+    </script>
 </body>
 </html>

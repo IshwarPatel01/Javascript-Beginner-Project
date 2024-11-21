@@ -1,103 +1,88 @@
-let secretNumber;
-let chances;
-let guesses;
+const guessInput = document.getElementById("guess");
+const submitBtn = document.getElementById("submit");
+const resetBtn = document.getElementById("reset");
+const resultDisplay = document.getElementById("result");
+const guessesList = document.getElementById("guesses");
+
+let secretNumber = Math.floor(Math.random() * 100) + 1;
+let remainingChances = 10;
+let guesses = [];
 
 // Function to reset the game
 function resetGame() {
-    // Reset the game state
-    secretNumber = Math.floor(Math.random() * 100) + 1; // Random number between 1 and 100
-    chances = 10; // Number of chances
-    guesses = []; // To keep track of all guesses made
-    
-    // Reset the UI elements
-    document.getElementById("guess").value = ''; // Clear input field
-    document.getElementById("result").textContent = ''; // Clear result message
-    document.getElementById("remaining-chances").textContent = 'Remaining chances: 10'; // Reset remaining chances
-    document.getElementById("guess-list").innerHTML = ''; // Clear the guess list
-    document.getElementById("reset").style.display = "none"; // Hide the restart button
-    document.getElementById("submit").style.display = "inline"; // Show the submit button again
+    secretNumber = Math.floor(Math.random() * 100) + 1;
+    remainingChances = 10;
+    guesses = [];
+    resultDisplay.textContent = "";
+    guessesList.innerHTML = "";
+    guessInput.value = "";
+    guessInput.disabled = false;
+    submitBtn.disabled = false;
+    resetBtn.style.display = "none";
 }
 
-// Initialize the game state
-resetGame();
+// Function to process a user's guess
+function processGuess() {
+    let userGuess = guessInput.value;
 
-let submitBtn = document.getElementById("submit");
-let resetBtn = document.getElementById("reset");
-
-submitBtn.addEventListener("click", function(event) {
-    event.preventDefault(); // Prevent form submission on button click
-
-    let guess = parseInt(document.getElementById("guess").value); // Get the user's guess
-    let resultElement = document.getElementById("result");
-    let remainingChancesElement = document.getElementById("remaining-chances");
-    let guessListElement = document.getElementById("guess-list");
-
-    // Check if guess is valid
-    if (isNaN(guess) || guess < 1 || guess > 100) {
-        resultElement.textContent = "Please enter a valid number between 1 and 100.";
+    // Validate input
+    if (!userGuess) {
+        resultDisplay.textContent = "Please enter a number!";
         return;
     }
 
-    // Add the guess to the guesses array
-    guesses.push(guess);
+    userGuess = parseInt(userGuess, 10); // Convert to an integer
 
-    // Clear the input field after submitting a guess
-    document.getElementById("guess").value = ''; 
-
-    // Check if the user has already won before reducing the chances
-    if (guess === secretNumber) {
-        resultElement.textContent = `Congratulations! You've guessed the number ${secretNumber} correctly!`;
-        submitBtn.style.display = "none"; // Hide the submit button after winning
-        resetBtn.style.display = "inline"; // Show the restart button
-        return; // Exit the function if the game is won
+    if (isNaN(userGuess) || userGuess < 1 || userGuess > 100) {
+        resultDisplay.textContent = "Please enter a valid number between 1 and 100!";
+        return;
     }
 
-    // Decrease the remaining chances only after checking if the guess is correct
-    if (chances > 0) {
-        chances--; // Decrease remaining chances
-
-        if (guess < secretNumber) {
-            resultElement.textContent = "Too low! Try again.";
-        } else {
-            resultElement.textContent = "Too high! Try again.";
-        }
-
-        // Update the remaining chances
-        remainingChancesElement.textContent = `Remaining chances: ${chances}`;
-
-        // Display all guesses made so far
-        guessListElement.innerHTML = ''; // Clear the list before displaying new guesses
-        guesses.forEach(function(g) {
-            let li = document.createElement("li");
-            li.textContent = `Guess: ${g}`;
-            guessListElement.appendChild(li);
-        });
-
-        // If out of chances
-        if (chances === 0) {
-            resultElement.textContent = `Sorry! You've used all your chances. The number was: ${secretNumber}`;
-            submitBtn.style.display = "none"; // Hide the submit button after game over
-            resetBtn.style.display = "inline"; // Show the restart button
-        }
+    if (!Number.isInteger(userGuess)) {
+        resultDisplay.textContent = "Please enter a whole number!";
+        return;
     }
+
+    if (guesses.includes(userGuess)) {
+        resultDisplay.textContent = `You already guessed ${userGuess}. Try a different number.`;
+        return;
+    }
+
+    // Process valid guess
+    guesses.push(userGuess);
+    remainingChances--;
+    guessesList.innerHTML += `<li>Guess: ${userGuess}</li>`;
+    guessInput.value = ""; // Clear input field
+
+    if (userGuess === secretNumber) {
+        resultDisplay.textContent = `🎉 Congratulations! You guessed the number ${secretNumber}!`;
+        guessInput.disabled = true;
+        submitBtn.disabled = true;
+        resetBtn.style.display = "block";
+    } else if (remainingChances === 0) {
+        resultDisplay.textContent = `😢 Sorry! You've used all your chances. The number was: ${secretNumber}`;
+        guessInput.disabled = true;
+        submitBtn.disabled = true;
+        resetBtn.style.display = "block";
+    } else {
+        const hint = userGuess > secretNumber ? "Try a smaller number!" : "Try a larger number!";
+        resultDisplay.textContent = `❌ Wrong guess! ${hint} Remaining chances: ${remainingChances}`;
+    }
+}
+
+// Event listeners
+submitBtn.addEventListener("click", processGuess);
+resetBtn.addEventListener("click", resetGame);
+
+// Prevent "Enter" key from restarting the game
+document.getElementById("game-form").addEventListener("submit", (event) => {
+    event.preventDefault();
 });
 
-// Restart the game when the reset button is clicked
-resetBtn.addEventListener("click", function() {
-    resetGame(); // Reset the game state and UI
-});
-
-// Prevent form submission or page reload when "Enter" is pressed
-document.getElementById("guessForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent the form from submitting
-});
-
-// Prevent "Enter" keypress from submitting the form
-document.getElementById("guess").addEventListener("keydown", function(event) {
+// Handle "Enter" key for submitting guesses
+document.addEventListener("keypress", (event) => {
     if (event.key === "Enter") {
-        event.preventDefault(); // Prevent the default "Enter" key behavior (form submission)
-        if (chances > 0) {
-            submitBtn.click(); // Trigger the button click handler manually if the game is ongoing
-        }
+        event.preventDefault();
+        submitBtn.click();
     }
 });
