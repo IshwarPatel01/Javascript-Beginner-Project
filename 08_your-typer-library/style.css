@@ -1,0 +1,39 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    color: white;
+    margin: 0;
+  }
+  
+  p {
+    font-size: 2rem;
+    white-space: nowrap;
+  }
+  
+  .cursor {
+    font-weight: bold;
+    color: white;
+    display: inline-block;
+    animation: blink 0.5s steps(1) infinite;
+  }
+  
+  .cursor.active {
+    visibility: hidden; /* Toggles cursor visibility */
+  }
+  
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
